@@ -1,0 +1,10 @@
+*.o
+Alg_Finder
+*~
+*.d
+*#*
+CMakeFiles
+Makefile
+CMakeCache.txt
+cmake_install.cmake
+*.log
