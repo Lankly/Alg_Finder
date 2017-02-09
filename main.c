@@ -8,6 +8,40 @@
 #include "state.h"
 
 #define MAX_INPUT_LEN 16
+#define HISTORY_LEN 12
+#define HISTORY_ITEM_MAX_LEN MAX_INPUT_LEN
+
+void log_history(char **history, char *item){
+  if(history == NULL || item == NULL){
+    return;
+  }
+
+  //Move all current logs down
+  for(int i = HISTORY_LEN - 2; i >= 0; i--){
+    if(history[i + 1] == NULL){
+      history[i + 1] = Calloc(HISTORY_ITEM_MAX_LEN + 1, sizeof(char));
+    }
+    if(history[i] != NULL){
+      memcpy(history[i + 1], history[i], HISTORY_ITEM_MAX_LEN);
+    }
+  }
+
+  //Put the new item at the top of history
+  if(history[0] == NULL){
+    history[0] = Calloc(HISTORY_ITEM_MAX_LEN + 1, sizeof(char));
+  }
+  memcpy(history[0], item, HISTORY_ITEM_MAX_LEN);
+}
+
+void print_history(char **history, int x_coord){
+  if(history == NULL){
+    return;
+  }
+
+  for(int i = 0; i < HISTORY_LEN && history[i] != NULL; i++){
+    mvaddstr(i, x_coord, history[i]);
+  }
+}
 
 //Main
 int main(int argc, char** argv){
@@ -23,7 +57,7 @@ int main(int argc, char** argv){
   int side_len = 3;
   state_t *s = new_state(side_len);
   char *input = Calloc(MAX_INPUT_LEN, sizeof(char));
-  char *prev_input = Calloc(MAX_INPUT_LEN, sizeof(char));
+  char **history = Calloc(HISTORY_LEN, sizeof(char *));
   bool help_menu_entered = false;
 
   
@@ -38,6 +72,9 @@ int main(int argc, char** argv){
     mvaddstr(input_line + 1, 0, "Help: ?");
     mvaddstr(input_line, 0, input_inst);
 
+    //Print history
+    print_history(history, side_len * 4 + 8);
+    
     //Setup for user input
     int c = 0;
     int index = 0;
@@ -46,7 +83,7 @@ int main(int argc, char** argv){
     //Handle if we just came from the help screen or not
     if(help_menu_entered){
       help_menu_entered = false;
-      memcpy(input, prev_input, MAX_INPUT_LEN);
+      memcpy(input, history[0], MAX_INPUT_LEN);
       index = strlen(input);
     }
     
@@ -94,20 +131,35 @@ int main(int argc, char** argv){
     }
     else{
       //Just hitting enter repeats the previous command
-      if(strcmp(input, "") == 0){
-	memcpy(input, prev_input, MAX_INPUT_LEN);
+      if(strcmp(input, "") == 0 && history[0] != NULL){
+	memcpy(input, history[0], MAX_INPUT_LEN);
       }
     
       state_t *temp = make_move(s, input);
+      
+      //Only add this input to history if it changed the cube
+      if(!state_equal(temp, s)){
+	log_history(history, input);
+      }
+      
       print_state(temp);
       free(s);
       s = temp;
     }
-
-    memcpy(prev_input, input, MAX_INPUT_LEN);
   }
 
-  free_state(s);
+  if(s != NULL){
+    free_state(s);
+  }
+  if(history != NULL){
+    for(int i = 0; i < HISTORY_LEN; i++){
+      if(history[i] != NULL){
+	free(history[i]);
+      }
+    }
+  }
+  free(history);
+  free(input);
 
   //Stop ncurses
   endwin();

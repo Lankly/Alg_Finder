@@ -238,6 +238,36 @@ state_t *make_move(state_t *s, char *input){
   return copy;
 }
 
+bool state_equal(state_t *s1, state_t *s2){
+  //If they have the same address, they are equivalent
+  if(s1 == s2){
+    return true;
+  }
+  
+  //Since they weren't the same above, only one of them can be null here.
+  if(s1 == NULL || s2 == NULL){
+    return false;
+  }
+
+  //Also return false if they are of different sizes
+  if(s1->side_len != s2->side_len){
+    return false;
+  }
+
+  int face_length = s1->side_len * s1->side_len;
+
+  //Now compare every cell of each face
+  for(int i = 0; i < NUM_FACES; i++){
+    for(int j = 0; j < face_length; j++){
+      if(s1->faces[i][j] != s2->faces[i][j]){
+	return false;
+      }
+    }
+  }
+  
+  return true;
+}
+
 void print_state(state_t *s){
   if(s == NULL || s->faces == NULL){
     return;

@@ -25,6 +25,13 @@ state_t *copy_state(state_t *s);
  */
 state_t *make_move(state_t *s, char *input);
 
+/* Returns true if the two given states are the same, including cube 
+ * orientation (for example, all sides are solid, but located in a different
+ * region of our 2-D mapping returns false when compared with a fresh cube).
+ * Both states must be valid.
+ */
+bool state_equal(state_t *s1, state_t *s2);
+
 /* Prints a 2-D representation of the cube to the terminal, unrolled in a 
  * t-shaped pattern like this:
  *        _
