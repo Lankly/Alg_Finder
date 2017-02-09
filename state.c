@@ -11,13 +11,22 @@ struct state_t{
   color **faces;
 };
 
-/* Helper function prototypes here
+/******************************
+ * HELPER FUNCTION PROTOTYPES *
+ ******************************/
+
+/* Rotates the given face 90 degrees clockwise.
  */
 void rotate_face(color *face);
+
+/* Copies the given side from source over the given side of dest.
+ */
 void copy_side(color *dest, int dest_side, color *source, int source_side);
 
-/* Start of function implementations
- */
+
+/**************************** 
+ * FUNCTION IMPLEMENTATIONS *
+ ****************************/
 
 state_t *empty_state(){
   state_t *ret = Calloc(1, sizeof(state_t));
@@ -177,6 +186,7 @@ state_t *make_move(state_t *s, int face, bool clockwise){
   
   return copy;
 }
+
 
 /********************
  * HELPER FUNCTIONS *
