@@ -60,7 +60,9 @@ void print_help(){
 	   "used move.");
   mvaddstr(16, 3,
 	   "'q' quits the program. '?' brings you to this page.");
-  mvaddstr(20, 1, "Press any key to continue...");
+  mvaddstr(17, 3,
+	   "'n' creates a new cube and allows you to set the size.");
+  mvaddstr(21, 1, "Press any key to continue...");
   
   getch();
   curs_set(2);

@@ -11,6 +11,16 @@
 #define HISTORY_LEN 12
 #define HISTORY_ITEM_MAX_LEN MAX_INPUT_LEN
 
+/*********************
+ * Private variables *
+ *********************/
+int side_len = 3;
+
+
+/********************
+ * Helper functions *
+ ********************/
+
 void log_history(char **history, char *item){
   if(history == NULL || item == NULL){
     return;
@@ -43,7 +53,71 @@ void print_history(char **history, int x_coord){
   }
 }
 
-//Main
+void free_history(char **history){
+  if(history == NULL){
+    return;
+  }
+  for(int i = 0; i < HISTORY_LEN; i++){
+    if(history[i] != NULL){
+      free(history[i]);
+    }
+  }
+  free(history);
+}
+
+bool confirm_restart(int input_line){
+  move(input_line, 0);
+  clrtoeol();
+  addstr("Are you sure you want to restart? y/N");
+  int c = getch();
+
+  if(c != 'y' && c != 'Y'){
+    return false;
+  }
+
+  //Now get the size of the cube they'd like
+  move(input_line, 0);
+  clrtoeol();
+  const char *question = "How big would you like the new cube to be? ";
+  int question_len = strlen(question);
+  
+  //Arbitrarily limit to 99
+  int limit = 3, index = 0;
+  char *answer = Calloc(limit, sizeof(char));
+  addstr(question);
+  c = 0;
+  while(c != KEY_ENTER && c != '\n'){
+    move(input_line, question_len);
+    clrtoeol();
+    addstr(answer);
+    c = getch();
+
+    if(((c == KEY_BACKSPACE) || (c == 127) || (c == 7)) && index > 0){
+      index --;
+      answer[index] = 0;
+    }
+    else if(index < limit && isdigit(c)){
+      answer[index] = c;
+      index++;
+    }
+  }
+
+  //If they failed to provide a number, fail
+  if(strcmp(answer, "") == 0){
+    return false;
+  }
+
+  side_len = atoi(answer);
+  
+  free(answer);
+
+  return true;
+}
+
+
+/********
+ * Main *
+ ********/
 int main(int argc, char** argv){
   //Setup
   WIN = initscr();
@@ -54,11 +128,11 @@ int main(int argc, char** argv){
   keypad(stdscr, true);
   color_init();
   
-  int side_len = 3;
   state_t *s = new_state(side_len);
   char *input = Calloc(MAX_INPUT_LEN, sizeof(char));
   char **history = Calloc(HISTORY_LEN, sizeof(char *));
   bool help_menu_entered = false;
+  bool restart = false;
 
   
   //Main Loop
@@ -83,7 +157,9 @@ int main(int argc, char** argv){
     //Handle if we just came from the help screen or not
     if(help_menu_entered){
       help_menu_entered = false;
-      memcpy(input, history[0], MAX_INPUT_LEN);
+      if(history[0] != NULL){
+	memcpy(input, history[0], MAX_INPUT_LEN);
+      }
       index = strlen(input);
     }
     
@@ -99,11 +175,9 @@ int main(int argc, char** argv){
       c = getch();
 
       //Handle backspace
-      if((c == KEY_BACKSPACE) || (c == 127) || (c == 7)){
-	if(index > 0){
-	  index--;
-	  input[index] = '\0';
-	}
+      if(((c == KEY_BACKSPACE) || (c == 127) || (c == 7)) && index > 0){
+	index--;
+	input[index] = '\0';
       }
       //Handle question mark
       else if(c == '?'){
@@ -124,12 +198,22 @@ int main(int argc, char** argv){
     if(strcmp(input, "q") == 0 || strcmp(input, "Q") == 0){
       break;
     }
+    //Check if they're restarting
+    if(strcmp(input, "n") == 0 || strcmp(input, "N") == 0){
+      if(confirm_restart(input_line)){
+	free_history(history);
+	history = Calloc(HISTORY_LEN, sizeof(char *));
+	free(s);
+	s = new_state(side_len);
+      }
+      restart = true;
+    }
 
     //Check for help screen
     if(help_menu_entered){
       print_help();
     }
-    else{
+    else if(!restart){
       //Just hitting enter repeats the previous command
       if(strcmp(input, "") == 0 && history[0] != NULL){
 	memcpy(input, history[0], MAX_INPUT_LEN);
@@ -146,19 +230,15 @@ int main(int argc, char** argv){
       free(s);
       s = temp;
     }
+    else{
+      restart = false;
+    }
   }
 
   if(s != NULL){
     free_state(s);
   }
-  if(history != NULL){
-    for(int i = 0; i < HISTORY_LEN; i++){
-      if(history[i] != NULL){
-	free(history[i]);
-      }
-    }
-  }
-  free(history);
+  free_history(history);
   free(input);
 
   //Stop ncurses
