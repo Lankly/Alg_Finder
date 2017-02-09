@@ -37,7 +37,7 @@ int main(int argc, char** argv){
     mvaddstr(input_line + 1, 0, "Help: ?");
     mvaddstr(input_line, 0, input_inst);
     
-    char c = '\0';
+    int c = '\0';
     int index = 0;
     memset(input, 0, MAX_INPUT_LEN);
 
