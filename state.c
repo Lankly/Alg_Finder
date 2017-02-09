@@ -82,28 +82,40 @@ state_t *make_move(state_t *s, int face, bool clockwise){
    * #1__   _/  _____#3                   .----.
    *     \_|_|_/_                         |    |----|Side #1
    *     |_|_|_|_|              Side #3|--|    |
-   *       |_|\  \___#4                   `----'
+   *       |_|\   \__#4                   `----'
    * #5___/    \_____#2                      \------|Side #2
    *
-   * And the first element is in the upper left corner of each square in this 
-   * image.
+   * And the first element is in the upper left corner of each face in this 
+   * image. #2 is also the top of the cube.
    */
   switch(face){
   case 0:
     if(clockwise){
-      copy_side(copy->faces[1], 0, s->faces[4], 0);
-      copy_side(copy->faces[2], 0, s->faces[1], 0);
-      copy_side(copy->faces[3], 0, s->faces[2], 0);
-      copy_side(copy->faces[4], 0, s->faces[3], 0);
-    }
-    else{
       copy_side(copy->faces[1], 0, s->faces[2], 0);
       copy_side(copy->faces[2], 0, s->faces[3], 0);
       copy_side(copy->faces[3], 0, s->faces[4], 0);
       copy_side(copy->faces[4], 0, s->faces[1], 0);
     }
+    else{
+      copy_side(copy->faces[1], 0, s->faces[4], 0);
+      copy_side(copy->faces[2], 0, s->faces[1], 0);
+      copy_side(copy->faces[3], 0, s->faces[2], 0);
+      copy_side(copy->faces[4], 0, s->faces[3], 0);
+    }
     break;
   case 1:
+    if(clockwise){
+      copy_side(copy->faces[0], 3, s->faces[4], 1);
+      copy_side(copy->faces[2], 3, s->faces[0], 3);
+      copy_side(copy->faces[5], 3, s->faces[2], 3);
+      copy_side(copy->faces[4], 1, s->faces[5], 3);
+    }
+    else{
+      copy_side(copy->faces[0], 3, s->faces[2], 3);
+      copy_side(copy->faces[2], 3, s->faces[5], 3);
+      copy_side(copy->faces[5], 3, s->faces[4], 1);
+      copy_side(copy->faces[4], 1, s->faces[0], 3);
+    }
     break;
   case 2:
     if(clockwise){
@@ -123,17 +135,29 @@ state_t *make_move(state_t *s, int face, bool clockwise){
     if(clockwise){
       copy_side(copy->faces[0], 1, s->faces[4], 3);
       copy_side(copy->faces[2], 1, s->faces[0], 1);
-      copy_side(copy->faces[4], 3, s->faces[2], 0);
-      copy_side(copy->faces[5], 1, s->faces[3], 0);
+      copy_side(copy->faces[5], 1, s->faces[2], 1);
+      copy_side(copy->faces[4], 3, s->faces[5], 1);
     }
     else{
-      copy_side(copy->faces[1], 0, s->faces[2], 0);
-      copy_side(copy->faces[2], 0, s->faces[3], 0);
-      copy_side(copy->faces[3], 0, s->faces[4], 0);
-      copy_side(copy->faces[4], 0, s->faces[1], 0);
+      copy_side(copy->faces[0], 1, s->faces[2], 1);
+      copy_side(copy->faces[2], 1, s->faces[5], 1);
+      copy_side(copy->faces[5], 1, s->faces[4], 3);
+      copy_side(copy->faces[4], 3, s->faces[0], 1);
     }
     break;
   case 4:
+    if(clockwise){
+      copy_side(copy->faces[0], 0, s->faces[3], 1);
+      copy_side(copy->faces[3], 1, s->faces[5], 2);
+      copy_side(copy->faces[5], 2, s->faces[1], 3);
+      copy_side(copy->faces[1], 3, s->faces[0], 0);
+    }
+    else{
+      copy_side(copy->faces[0], 0, s->faces[1], 3);
+      copy_side(copy->faces[3], 1, s->faces[0], 0);
+      copy_side(copy->faces[5], 2, s->faces[3], 1);
+      copy_side(copy->faces[1], 3, s->faces[5], 2);
+    }
     break;
   default:
     if(clockwise){
