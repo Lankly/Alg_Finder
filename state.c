@@ -237,27 +237,23 @@ void print_state(state_t *s){
     return;
   }
 
-  //We'll use this to make the tops and bottoms easier to write
   int max_line_len = (NUM_FACES - 2) * s->side_len + (NUM_FACES - 2) + 1;
-  char *tops = Calloc(max_line_len + 1, sizeof(char));
-  for(int i = 0; i < max_line_len; i++){
-    tops[i] = '-';
-  }
-  char *buffer = Calloc(max_line_len + 1, sizeof(char));
   int current_line = 0;
   
   /* Print #0 first */
   // First part is the top of the surrounding box
-  sprintf(buffer,"%*c.%.*s.", s->side_len + 1, ' ', s->side_len, tops);
-  mvaddstr(current_line, 0, buffer);
-  memset(buffer, 0, max_line_len);
+  move(0, s->side_len + 1);
+  addch(ACS_ULCORNER);
+  for(int i = 0; i < s->side_len; i++){
+    addch(ACS_HLINE);
+  }
+  addch(ACS_URCORNER);
   current_line++;
 
   for(int i = 0; i < s->side_len; i++){
     //Second part is the whitespace, following by the side of the box
-    sprintf(buffer, "%*c|", 1 + s->side_len, ' ');
-    mvaddstr(current_line, 0, buffer);
-    memset(buffer, 0, max_line_len);
+    move(current_line, s->side_len + 1);
+    addch(ACS_VLINE);
     
     for(int j = 0; j < s->side_len; j++){
       //We need to convert the color to something we can actually represent
@@ -269,25 +265,32 @@ void print_state(state_t *s){
     }
 
     //Finally add the other side of the box
-    addch('|');
+    addch(ACS_VLINE);
     
     current_line++;
   }
 
   /* Print the top of the long row of faces */
-  sprintf(buffer, ".%.*s.\n", max_line_len - 2, tops);
-  mvaddstr(current_line, 0, buffer);
-  memset(buffer, 0, max_line_len);
+  move(current_line, 0);
+  addch(ACS_ULCORNER);
+  for(int i = 0; i < max_line_len - 2; i++){
+    addch(ACS_HLINE);
+  }
+  mvaddch(current_line, 1 + s->side_len, ACS_PLUS);
+  mvaddch(current_line, 2 * (1 + s->side_len), ACS_PLUS);
+  mvaddch(current_line, 3 * (1 + s->side_len), ACS_TTEE);
+  mvaddch(current_line, max_line_len - 1, ACS_URCORNER);
   current_line++;
   
   /* Print #1 through #4 next, all in a line */
   for(int i = 0; i < s->side_len; i++){
     move(current_line, 0);
+
     for(int j = 0; j < s->side_len * (NUM_FACES - 2); j++){
       
       //Print the side of a box whenever we reach the start of a new face
       if(j % s->side_len == 0){
-        addch('|');
+        addch(ACS_VLINE);
       }
 
       int coord = get_coord(j % s->side_len, i, s->side_len);
@@ -296,21 +299,26 @@ void print_state(state_t *s){
 
       addch(actual_color);
     }
-    addch('|');
+    addch(ACS_VLINE);
     current_line++;
   }
 
   /* Print the bottom of the long row of faces */
-  sprintf(buffer, "`%.*s'\n", max_line_len - 2, tops);
-  mvaddstr(current_line, 0, buffer);
-  memset(buffer, 0, max_line_len);
+  move(current_line, 0);
+  addch(ACS_LLCORNER);
+  for(int i = 0; i < max_line_len - 2; i++){
+    addch(ACS_HLINE);
+  }
+  mvaddch(current_line, 1 + s->side_len, ACS_PLUS);
+  mvaddch(current_line, 2 * (1 + s->side_len), ACS_PLUS);
+  mvaddch(current_line, 3 * (1 + s->side_len), ACS_BTEE);
+  mvaddch(current_line, max_line_len - 1, ACS_LRCORNER);
   current_line++;
 
   /* Print #5 */
   for(int i = 0; i < s->side_len; i++){
-    sprintf(buffer, "%*c|", 1 + s->side_len, ' ');
-    mvaddstr(current_line, 0, buffer);
-    memset(buffer, 0, max_line_len);
+    move(current_line, s->side_len + 1);
+    addch(ACS_VLINE);
     
     for(int j = 0; j < s->side_len; j++){
       color c = s->faces[NUM_FACES - 1][get_coord(j, i, s->side_len)];
@@ -319,16 +327,17 @@ void print_state(state_t *s){
       addch(actual_color);
     }
 
-    addch('|');
+    addch(ACS_VLINE);
     current_line++;
   }
 
   //Bottom of #5
-  sprintf(buffer, "%*c`%.*s'\n", s->side_len + 1, ' ', s->side_len, tops);
-  mvaddstr(current_line, 0, buffer);
-  
-  free(buffer);
-  free(tops);
+  move(current_line, s->side_len + 1);
+  addch(ACS_LLCORNER);
+  for(int i = 0; i < s->side_len; i++){
+    addch(ACS_HLINE);
+  }
+  addch(ACS_LRCORNER);
 }
 
 /********************
