@@ -183,7 +183,7 @@ state_t *make_move(state_t *s, int face, bool clockwise){
  ********************/
 
 void rotate_face(color *face){
-  if(side == NULL){
+  if(face == NULL){
     return;
   }
 
@@ -193,23 +193,23 @@ void rotate_face(color *face){
       int prev_coord = get_coord(i, j, SIDE_LEN);
       
       //Need a temp variable to move in-place
-      int temp = side[prev_coord];
+      int temp = face[prev_coord];
  
       //Right to Upper
-      side[prev_coord] = side[coord];
+      face[prev_coord] = face[coord];
       
       //Bottom to Right
       prev_coord = coord;
       coord = get_coord(SIDE_LEN - i - 1, SIDE_LEN - j - 1, SIDE_LEN);
-      side[prev_coord] = side[coord];
+      face[prev_coord] = face[coord];
  
       //Left to Bottom
       prev_coord = coord;
       coord = get_coord(SIDE_LEN - j - 1, i, SIDE_LEN);
-      side[prev_coord] = side[coord];
+      face[prev_coord] = face[coord];
  
       //Temp to Left
-      side[coord] = temp;
+      face[coord] = temp;
     }
   }
 }
