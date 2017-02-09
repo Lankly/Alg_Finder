@@ -20,6 +20,10 @@ void quit(const char *error_msg);
  */
 int get_coord(int x, int y, int width);
 
+/* Prints a help message to the terminal for the user.
+ */
+void print_help();
+
 /**********
  * COLORS *
  **********/

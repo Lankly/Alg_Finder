@@ -14,7 +14,7 @@ int main(int argc, char** argv){
   //Setup
   WIN = initscr();
   timeout(-1);
-  curs_set(1);
+  curs_set(2);
   cbreak();
   noecho();
   keypad(stdscr, true);
@@ -31,12 +31,16 @@ int main(int argc, char** argv){
     clear();
     print_state(s);
 
+    //Print instructions
     int input_line = side_len * 3 + 4;
-    mvaddstr(input_line, 0, "Rotate face: ");
+    const char *input_inst = "Next move: ";
+    mvaddstr(input_line + 1, 0, "Help: ?");
+    mvaddstr(input_line, 0, input_inst);
     
     char c = '\0';
     int index = 0;
     memset(input, 0, MAX_INPUT_LEN);
+
     //Read from keyboard until enter is pressed
     while(c != '\n' && c != KEY_ENTER){
       c = getch();
@@ -46,13 +50,19 @@ int main(int argc, char** argv){
 	if(index > 0){
 	  index--;
 	  input[index] = '\0';
-	  move(input_line, strlen("Rotate face: "));
+	  move(input_line, strlen(input_inst));
 	  clrtoeol();
 	  addstr(input);
 	}
       }
+      //Handle question mark
+      else if(c == '?'){
+	input[index] = c;
+	//We want the help page to happen instantly
+	break;
+      }
       //Then only add the next character if input has enough space
-      else if(index < MAX_INPUT_LEN - 1 && isalnum(c)){{
+      else if(index < MAX_INPUT_LEN - 1 && (isalnum(c))){{
 	  input[index] = c;
 	  addch(c);
 	  index++;
@@ -64,8 +74,12 @@ int main(int argc, char** argv){
     if(strcmp(input, "q") == 0 || strcmp(input, "Q") == 0){
       break;
     }
+    //Check for question mark
+    else if(strcmp(input, "?") == 0){
+      print_help();
+    }
     //Just hitting enter repeats the previous command
-    if(strcmp(input, "") == 0){
+    else if(strcmp(input, "") == 0){
       memcpy(input, prev_input, MAX_INPUT_LEN);
     }
     

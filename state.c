@@ -37,13 +37,16 @@ struct state_t{
  */
 void rotate_face(color *face, int side_len);
 
-/* Copies the given side from source over the given side of dest.
+/* Copies the given side from source over the given side of dest. Depth is used
+ * to determine which whether the outermost layer should be used, or a layer 
+ * closer to the center.
  */
 void copy_side(color *dest,
                int dest_side,
                color *source,
                int source_side,
-               int side_len);
+               int side_len,
+	       int depth);
 
 /* Returns the first letter of the given color.
  */
@@ -122,104 +125,106 @@ state_t *make_move(state_t *s, char *input, bool clockwise){
 
   //Parse the input
   int face = get_face(input);
-  //  int depth = get_depth(input);
+  int depth = get_depth(input);
 
   //Stop if the face was invalid
   if(face < 0){
     return copy;
   }
   
-  //Rotate the side itself
-  rotate_face(copy->faces[face], copy->side_len);
-  if(!clockwise){
+  //Rotate the side itself (don't do this if turning an interior slice)
+  if(depth == 0){
     rotate_face(copy->faces[face], copy->side_len);
-    rotate_face(copy->faces[face], copy->side_len);
+    if(!clockwise){
+      rotate_face(copy->faces[face], copy->side_len);
+      rotate_face(copy->faces[face], copy->side_len);
+    }
   }
   
   //Move all the connected sides
   switch(face){
   case 0:
     if(clockwise){
-      copy_side(copy->faces[1], 0, s->faces[2], 0, s->side_len);
-      copy_side(copy->faces[2], 0, s->faces[3], 0, s->side_len);
-      copy_side(copy->faces[3], 0, s->faces[4], 0, s->side_len);
-      copy_side(copy->faces[4], 0, s->faces[1], 0, s->side_len);
+      copy_side(copy->faces[1], 0, s->faces[2], 0, s->side_len, depth);
+      copy_side(copy->faces[2], 0, s->faces[3], 0, s->side_len, depth);
+      copy_side(copy->faces[3], 0, s->faces[4], 0, s->side_len, depth);
+      copy_side(copy->faces[4], 0, s->faces[1], 0, s->side_len, depth);
     }
     else{
-      copy_side(copy->faces[1], 0, s->faces[4], 0, s->side_len);
-      copy_side(copy->faces[2], 0, s->faces[1], 0, s->side_len);
-      copy_side(copy->faces[3], 0, s->faces[2], 0, s->side_len);
-      copy_side(copy->faces[4], 0, s->faces[3], 0, s->side_len);
+      copy_side(copy->faces[1], 0, s->faces[4], 0, s->side_len, depth);
+      copy_side(copy->faces[2], 0, s->faces[1], 0, s->side_len, depth);
+      copy_side(copy->faces[3], 0, s->faces[2], 0, s->side_len, depth);
+      copy_side(copy->faces[4], 0, s->faces[3], 0, s->side_len, depth);
     }
     break;
   case 1:
     if(clockwise){
-      copy_side(copy->faces[0], 3, s->faces[4], 1, s->side_len);
-      copy_side(copy->faces[2], 3, s->faces[0], 3, s->side_len);
-      copy_side(copy->faces[5], 3, s->faces[2], 3, s->side_len);
-      copy_side(copy->faces[4], 1, s->faces[5], 3, s->side_len);
+      copy_side(copy->faces[0], 3, s->faces[4], 1, s->side_len, depth);
+      copy_side(copy->faces[2], 3, s->faces[0], 3, s->side_len, depth);
+      copy_side(copy->faces[5], 3, s->faces[2], 3, s->side_len, depth);
+      copy_side(copy->faces[4], 1, s->faces[5], 3, s->side_len, depth);
     }
     else{
-      copy_side(copy->faces[0], 3, s->faces[2], 3, s->side_len);
-      copy_side(copy->faces[2], 3, s->faces[5], 3, s->side_len);
-      copy_side(copy->faces[5], 3, s->faces[4], 1, s->side_len);
-      copy_side(copy->faces[4], 1, s->faces[0], 3, s->side_len);
+      copy_side(copy->faces[0], 3, s->faces[2], 3, s->side_len, depth);
+      copy_side(copy->faces[2], 3, s->faces[5], 3, s->side_len, depth);
+      copy_side(copy->faces[5], 3, s->faces[4], 1, s->side_len, depth);
+      copy_side(copy->faces[4], 1, s->faces[0], 3, s->side_len, depth);
     }
     break;
   case 2:
     if(clockwise){
-      copy_side(copy->faces[0], 2, s->faces[1], 1, s->side_len);
-      copy_side(copy->faces[3], 3, s->faces[0], 2, s->side_len);
-      copy_side(copy->faces[5], 0, s->faces[3], 3, s->side_len);
-      copy_side(copy->faces[1], 1, s->faces[5], 0, s->side_len);
+      copy_side(copy->faces[0], 2, s->faces[1], 1, s->side_len, depth);
+      copy_side(copy->faces[3], 3, s->faces[0], 2, s->side_len, depth);
+      copy_side(copy->faces[5], 0, s->faces[3], 3, s->side_len, depth);
+      copy_side(copy->faces[1], 1, s->faces[5], 0, s->side_len, depth);
     }
     else{
-      copy_side(copy->faces[0], 3, s->faces[3], 3, s->side_len);
-      copy_side(copy->faces[3], 2, s->faces[5], 0, s->side_len);
-      copy_side(copy->faces[5], 3, s->faces[1], 1, s->side_len);
-      copy_side(copy->faces[1], 0, s->faces[0], 2, s->side_len);
+      copy_side(copy->faces[0], 3, s->faces[3], 3, s->side_len, depth);
+      copy_side(copy->faces[3], 2, s->faces[5], 0, s->side_len, depth);
+      copy_side(copy->faces[5], 3, s->faces[1], 1, s->side_len, depth);
+      copy_side(copy->faces[1], 0, s->faces[0], 2, s->side_len, depth);
     }
     break;
   case 3:
     if(clockwise){
-      copy_side(copy->faces[0], 1, s->faces[4], 3, s->side_len);
-      copy_side(copy->faces[2], 1, s->faces[0], 1, s->side_len);
-      copy_side(copy->faces[5], 1, s->faces[2], 1, s->side_len);
-      copy_side(copy->faces[4], 3, s->faces[5], 1, s->side_len);
+      copy_side(copy->faces[0], 1, s->faces[4], 3, s->side_len, depth);
+      copy_side(copy->faces[2], 1, s->faces[0], 1, s->side_len, depth);
+      copy_side(copy->faces[5], 1, s->faces[2], 1, s->side_len, depth);
+      copy_side(copy->faces[4], 3, s->faces[5], 1, s->side_len, depth);
     }
     else{
-      copy_side(copy->faces[0], 1, s->faces[2], 1, s->side_len);
-      copy_side(copy->faces[2], 1, s->faces[5], 1, s->side_len);
-      copy_side(copy->faces[5], 1, s->faces[4], 3, s->side_len);
-      copy_side(copy->faces[4], 3, s->faces[0], 1, s->side_len);
+      copy_side(copy->faces[0], 1, s->faces[2], 1, s->side_len, depth);
+      copy_side(copy->faces[2], 1, s->faces[5], 1, s->side_len, depth);
+      copy_side(copy->faces[5], 1, s->faces[4], 3, s->side_len, depth);
+      copy_side(copy->faces[4], 3, s->faces[0], 1, s->side_len, depth);
     }
     break;
   case 4:
     if(clockwise){
-      copy_side(copy->faces[0], 0, s->faces[3], 1, s->side_len);
-      copy_side(copy->faces[3], 1, s->faces[5], 2, s->side_len);
-      copy_side(copy->faces[5], 2, s->faces[1], 3, s->side_len);
-      copy_side(copy->faces[1], 3, s->faces[0], 0, s->side_len);
+      copy_side(copy->faces[0], 0, s->faces[3], 1, s->side_len, depth);
+      copy_side(copy->faces[3], 1, s->faces[5], 2, s->side_len, depth);
+      copy_side(copy->faces[5], 2, s->faces[1], 3, s->side_len, depth);
+      copy_side(copy->faces[1], 3, s->faces[0], 0, s->side_len, depth);
     }
     else{
-      copy_side(copy->faces[0], 0, s->faces[1], 3, s->side_len);
-      copy_side(copy->faces[3], 1, s->faces[0], 0, s->side_len);
-      copy_side(copy->faces[5], 2, s->faces[3], 1, s->side_len);
-      copy_side(copy->faces[1], 3, s->faces[5], 2, s->side_len);
+      copy_side(copy->faces[0], 0, s->faces[1], 3, s->side_len, depth);
+      copy_side(copy->faces[3], 1, s->faces[0], 0, s->side_len, depth);
+      copy_side(copy->faces[5], 2, s->faces[3], 1, s->side_len, depth);
+      copy_side(copy->faces[1], 3, s->faces[5], 2, s->side_len, depth);
     }
     break;
   default:
     if(clockwise){
-      copy_side(copy->faces[1], 2, s->faces[2], 2, s->side_len);
-      copy_side(copy->faces[2], 2, s->faces[3], 2, s->side_len);
-      copy_side(copy->faces[3], 2, s->faces[4], 2, s->side_len);
-      copy_side(copy->faces[4], 2, s->faces[1], 2, s->side_len);
+      copy_side(copy->faces[1], 2, s->faces[2], 2, s->side_len, depth);
+      copy_side(copy->faces[2], 2, s->faces[3], 2, s->side_len, depth);
+      copy_side(copy->faces[3], 2, s->faces[4], 2, s->side_len, depth);
+      copy_side(copy->faces[4], 2, s->faces[1], 2, s->side_len, depth);
     }
     else{
-      copy_side(copy->faces[1], 2, s->faces[4], 2, s->side_len);
-      copy_side(copy->faces[2], 2, s->faces[1], 2, s->side_len);
-      copy_side(copy->faces[3], 2, s->faces[2], 2, s->side_len);
-      copy_side(copy->faces[4], 2, s->faces[3], 2, s->side_len);
+      copy_side(copy->faces[1], 2, s->faces[4], 2, s->side_len, depth);
+      copy_side(copy->faces[2], 2, s->faces[1], 2, s->side_len, depth);
+      copy_side(copy->faces[3], 2, s->faces[2], 2, s->side_len, depth);
+      copy_side(copy->faces[4], 2, s->faces[3], 2, s->side_len, depth);
     }
     break;
   }
@@ -367,7 +372,8 @@ void copy_side(color *dest,
                int dest_side,
                color *source,
                int source_side,
-               int side_len){
+               int side_len,
+	       int depth){
   //Rotate both these sides to the top for easy copying
   if(dest_side != 0){
     for(int i = 0; i + dest_side < 4; i++){
@@ -381,7 +387,7 @@ void copy_side(color *dest,
   }
 
   //Make the copy
-  memcpy(dest, source, side_len);
+  memcpy(dest + (depth * side_len), source + (depth * side_len), side_len);
 
   //Rotate them back
   if(dest_side != 0){
