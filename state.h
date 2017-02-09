@@ -20,10 +20,10 @@ void free_state(state_t *s);
  */
 state_t *copy_state(state_t *s);
 
-/* Returns a new state with the given face on the given state rotated either
- * clockwise or counterclockwise.
+/* Returns a new state with the given move on the given state rotated either
+ * clockwise or counterclockwise. The move is represented by input.
  */
-state_t *make_move(state_t *s, int face, bool clockwise);
+state_t *make_move(state_t *s, char *input, bool clockwise);
 
 /* Prints a 2-D representation of the cube to the terminal, unrolled in a 
  * t-shaped pattern like this:

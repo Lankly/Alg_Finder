@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <curses.h>
 #include "state.h"
 #include "helpers.h"
@@ -47,6 +48,20 @@ void copy_side(color *dest,
 /* Returns the first letter of the given color.
  */
 int ctoa(color c);
+
+/* Returns the index of the face represented by str, or -1 if it did not find
+ * anything. For example, if given the string "U", 2 would be returned, since
+ * that's the index of the upper face. str must be a valid, NULL-Terminated
+ * string.
+ */
+int get_face(char *str);
+
+/* Returns the depth that the turn should happen on. For example, given the
+ * input "2U" on a 3x3 cube, the depth would be 1, representing the middle
+ * slice of the cube to turn. Returns 0 by default. str must be a valid, 
+ * NULL-Terminated string.
+ */
+int get_depth(char *str);
 
 /**************************** 
  * FUNCTION IMPLEMENTATIONS *
@@ -96,20 +111,29 @@ state_t *copy_state(state_t *s){
   return copy;
 }
 
-state_t *make_move(state_t *s, int face, bool clockwise){
+state_t *make_move(state_t *s, char *input, bool clockwise){
   //We will be returning this copy
   state_t *copy = copy_state(s);
   
   //Stop if s is uninitialized or face is out of bounds
-  if(s == NULL || face < 0 || face >= NUM_FACES){
+  if(s == NULL){
     return copy;
   }
 
+  //Parse the input
+  int face = get_face(input);
+  //  int depth = get_depth(input);
+
+  //Stop if the face was invalid
+  if(face < 0){
+    return copy;
+  }
+  
   //Rotate the side itself
-  rotate_face(s->faces[face], s->side_len);
+  rotate_face(copy->faces[face], copy->side_len);
   if(!clockwise){
-    rotate_face(s->faces[face], s->side_len);
-    rotate_face(s->faces[face], s->side_len);
+    rotate_face(copy->faces[face], copy->side_len);
+    rotate_face(copy->faces[face], copy->side_len);
   }
   
   //Move all the connected sides
@@ -387,4 +411,61 @@ int ctoa(color c){
   default:
     return 'G' | COLOR_PAIR(CP_GREEN_BLACK);
   }
+}
+
+int get_face(char *str){
+  if(str == NULL){
+    return -1;
+  }
+
+  //Get an all-lowercase version of str
+  int len = strlen(str);
+  char *lower = Calloc(len, sizeof(char));
+  int lower_i = 0;
+  for(int i = 0; str[i] != '\0'; i++){
+    //Cut off any leading digits (and non-alpha characters in general)
+    if(isalpha(str[i])){
+      lower[lower_i] = tolower(str[i]);
+      lower_i++;
+    }
+  }
+
+  //Start comparisons with pre-defined
+  if(strcmp(lower, "b") == 0){
+    return 0;
+  }
+  else if(strcmp(lower, "l") == 0){
+    return 1;
+  }
+  else if(strcmp(lower, "u") == 0){
+    return 2;
+  }
+  else if(strcmp(lower, "r") == 0){
+    return 3;
+  }
+  else if(strcmp(lower, "d") == 0){
+    return 4;
+  }
+  else if(strcmp(lower, "f") == 0){
+    return 5;
+  }
+  
+  return -1;
+}
+
+
+int get_depth(char *str){
+  if(str == NULL){
+    return -1;
+  }
+
+  /* We're simply looking for a number at the start of the string, which
+   * we will subtract by one if found, and return 0 if not found. 
+   */
+  int result = atoi(str);
+  if(result > 0){
+    result--;
+  }
+  
+  return result;
 }
