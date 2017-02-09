@@ -42,11 +42,11 @@ int main(int argc, char** argv){
     memset(input, 0, MAX_INPUT_LEN);
 
     //Read from keyboard until enter is pressed
-    while(c != '\n' && c != KEY_ENTER){
+    while((c != '\n') && (c != KEY_ENTER)){
       c = getch();
 
       //Handle backspace
-      if(c == KEY_BACKSPACE || c == 127 || c == 7){
+      if((c == KEY_BACKSPACE) || (c == 127) || (c == 7)){
 	if(index > 0){
 	  index--;
 	  input[index] = '\0';
