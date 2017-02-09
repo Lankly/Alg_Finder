@@ -66,6 +66,11 @@ int get_face(char *str);
  */
 int get_depth(char *str);
 
+/* Returns true if the command does not end in an apostrophe, indicating that
+ * the move should be clockwise. str must be a valid, NULL-Terminated string.
+ */
+bool is_clockwise(char *str);
+
 /**************************** 
  * FUNCTION IMPLEMENTATIONS *
  ****************************/
@@ -114,7 +119,7 @@ state_t *copy_state(state_t *s){
   return copy;
 }
 
-state_t *make_move(state_t *s, char *input, bool clockwise){
+state_t *make_move(state_t *s, char *input){
   //We will be returning this copy
   state_t *copy = copy_state(s);
   
@@ -126,6 +131,7 @@ state_t *make_move(state_t *s, char *input, bool clockwise){
   //Parse the input
   int face = get_face(input);
   int depth = get_depth(input);
+  bool clockwise = is_clockwise(input);
 
   //Stop if the face was invalid
   if(face < 0){
@@ -179,10 +185,10 @@ state_t *make_move(state_t *s, char *input, bool clockwise){
       copy_side(copy->faces[1], 1, s->faces[5], 0, s->side_len, depth);
     }
     else{
-      copy_side(copy->faces[0], 3, s->faces[3], 3, s->side_len, depth);
-      copy_side(copy->faces[3], 2, s->faces[5], 0, s->side_len, depth);
-      copy_side(copy->faces[5], 3, s->faces[1], 1, s->side_len, depth);
-      copy_side(copy->faces[1], 0, s->faces[0], 2, s->side_len, depth);
+      copy_side(copy->faces[0], 2, s->faces[3], 3, s->side_len, depth);
+      copy_side(copy->faces[3], 3, s->faces[5], 0, s->side_len, depth);
+      copy_side(copy->faces[5], 0, s->faces[1], 1, s->side_len, depth);
+      copy_side(copy->faces[1], 1, s->faces[0], 2, s->side_len, depth);
     }
     break;
   case 3:
@@ -483,4 +489,17 @@ int get_depth(char *str){
   }
   
   return result;
+}
+
+bool is_clockwise(char *str){
+  if(str == NULL){
+    return true;
+  }
+
+  int len = strlen(str);
+  if(len < 1){
+    return true;
+  }
+
+  return str[len - 1] != '\'';
 }

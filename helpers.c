@@ -50,13 +50,17 @@ void print_help(){
 	   "To turn a slice, such as the middle layer on a 3x3, just specify");
   mvaddstr(9, 3,
 	   "the depth before the face's letter, like this: \"2U\"");
+  mvaddstr(10, 3,
+	   "To turn counter-clockwise, simply add an apostrophe to the end of");
   mvaddstr(11, 3,
+	   "the line, like this: \"2U'\"");
+  mvaddstr(13, 3,
 	   "Pressing enter with no move specified will repeat the most");
-  mvaddstr(12, 3,
-	   "used move.");
   mvaddstr(14, 3,
+	   "used move.");
+  mvaddstr(16, 3,
 	   "'q' quits the program. '?' brings you to this page.");
-  mvaddstr(18, 1, "Press any key to continue...");
+  mvaddstr(20, 1, "Press any key to continue...");
   
   getch();
   curs_set(2);

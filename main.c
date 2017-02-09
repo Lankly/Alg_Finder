@@ -52,9 +52,13 @@ int main(int argc, char** argv){
     
     //Read from keyboard until enter is pressed
     while((c != '\n') && (c != KEY_ENTER)){
+      /* Rewriting the line every time keeps it looking neat in the event of a
+       * double-wide charater, or when we return from the help screen.
+       */
       move(input_line, strlen(input_inst));
       clrtoeol();
       addstr(input);
+      
       c = getch();
 
       //Handle backspace
@@ -71,7 +75,7 @@ int main(int argc, char** argv){
 	break;
       }
       //Then only add the next character if input has enough space
-      else if(index < MAX_INPUT_LEN - 1 && (isalnum(c))){{
+      else if(index < MAX_INPUT_LEN - 1 && (isalnum(c) || c == '\'')){{
 	  input[index] = c;
 	  addch(c);
 	  index++;
@@ -94,7 +98,7 @@ int main(int argc, char** argv){
 	memcpy(input, prev_input, MAX_INPUT_LEN);
       }
     
-      state_t *temp = make_move(s, input, true);
+      state_t *temp = make_move(s, input);
       print_state(temp);
       free(s);
       s = temp;
