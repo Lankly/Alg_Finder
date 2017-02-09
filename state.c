@@ -46,7 +46,7 @@ void copy_side(color *dest,
 
 /* Returns the first letter of the given color.
  */
-char ctoa(color c);
+int ctoa(color c);
 
 /**************************** 
  * FUNCTION IMPLEMENTATIONS *
@@ -233,7 +233,7 @@ void print_state(state_t *s){
     for(int j = 0; j < s->side_len; j++){
       //We need to convert the color to something we can actually represent
       color c = s->faces[0][get_coord(j, i, s->side_len)];
-      char actual_color = ctoa(c);
+      int actual_color = ctoa(c);
 
       //Then we can add it to the buffer
       addch(actual_color);
@@ -263,7 +263,7 @@ void print_state(state_t *s){
 
       int coord = get_coord(j % s->side_len, i, s->side_len);
       color c = s->faces[1 + j / s->side_len][coord];
-      char actual_color = ctoa(c);
+      int actual_color = ctoa(c);
 
       addch(actual_color);
     }
@@ -285,7 +285,7 @@ void print_state(state_t *s){
     
     for(int j = 0; j < s->side_len; j++){
       color c = s->faces[NUM_FACES - 1][get_coord(j, i, s->side_len)];
-      char actual_color = ctoa(c);
+      int actual_color = ctoa(c);
 
       addch(actual_color);
     }
@@ -372,19 +372,19 @@ void copy_side(color *dest,
   }
 }
 
-char ctoa(color c){
+int ctoa(color c){
   switch(c){
   case 0:
-    return 'B';
+    return 'B' | COLOR_PAIR(CP_BLUE_BLACK);
   case 1:
-    return 'O';
+    return 'O' | COLOR_PAIR(CP_ORANGE_BLACK);
   case 2:
-    return 'W';
+    return 'W' | COLOR_PAIR(CP_WHITE_BLACK);
   case 3:
-    return 'R';
+    return 'R' | COLOR_PAIR(CP_RED_BLACK);
   case 4:
-    return 'Y';
+    return 'Y' | COLOR_PAIR(CP_YELLOW_BLACK);
   default:
-    return 'G';
+    return 'G' | COLOR_PAIR(CP_GREEN_BLACK);
   }
 }

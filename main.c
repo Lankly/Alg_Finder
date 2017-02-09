@@ -15,6 +15,7 @@ int main(int argc, char** argv){
   cbreak();
   noecho();
   keypad(stdscr, true);
+  color_init();
   
   int side_len = 3;
   state_t *s = new_state(side_len);

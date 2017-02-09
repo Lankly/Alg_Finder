@@ -20,4 +20,19 @@ void quit(const char *error_msg);
  */
 int get_coord(int x, int y, int width);
 
+/**********
+ * COLORS *
+ **********/
+
+#define CP_BLUE_BLACK   1
+#define CP_GREEN_BLACK  2
+#define CP_ORANGE_BLACK 3
+#define CP_RED_BLACK    4
+#define CP_WHITE_BLACK  5
+#define CP_YELLOW_BLACK 6
+
+#define COLOR_ORANGE 15
+
+void color_init();
+
 #endif

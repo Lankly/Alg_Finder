@@ -29,3 +29,19 @@ void quit(const char *error_msg){
 int get_coord(int x, int y, int width){
   return y * width + x;
 }
+
+void color_init(){
+  start_color();
+
+  //Create colors
+  init_color(COLOR_ORANGE, 1000, 269, 0);
+  init_color(COLOR_WHITE, 1000, 1000, 1000);
+
+  //Create pairs
+  init_pair(CP_BLUE_BLACK,   COLOR_BLUE,   COLOR_BLACK);
+  init_pair(CP_GREEN_BLACK,  COLOR_GREEN,  COLOR_BLACK);
+  init_pair(CP_ORANGE_BLACK, COLOR_ORANGE, COLOR_BLACK);
+  init_pair(CP_RED_BLACK,    COLOR_RED,    COLOR_BLACK);
+  init_pair(CP_WHITE_BLACK,  COLOR_WHITE,  COLOR_BLACK);
+  init_pair(CP_YELLOW_BLACK, COLOR_YELLOW, COLOR_BLACK);
+}
