@@ -24,6 +24,7 @@ int main(int argc, char** argv){
   state_t *s = new_state(side_len);
   char *input = Calloc(MAX_INPUT_LEN, sizeof(char));
   char *prev_input = Calloc(MAX_INPUT_LEN, sizeof(char));
+  bool help_menu_entered = false;
 
   
   //Main Loop
@@ -36,13 +37,24 @@ int main(int argc, char** argv){
     const char *input_inst = "Next move: ";
     mvaddstr(input_line + 1, 0, "Help: ?");
     mvaddstr(input_line, 0, input_inst);
-    
-    int c = '\0';
+
+    //Setup for user input
+    int c = 0;
     int index = 0;
     memset(input, 0, MAX_INPUT_LEN);
 
+    //Handle if we just came from the help screen or not
+    if(help_menu_entered){
+      help_menu_entered = false;
+      memcpy(input, prev_input, MAX_INPUT_LEN);
+      index = strlen(input);
+    }
+    
     //Read from keyboard until enter is pressed
     while((c != '\n') && (c != KEY_ENTER)){
+      move(input_line, strlen(input_inst));
+      clrtoeol();
+      addstr(input);
       c = getch();
 
       //Handle backspace
@@ -50,14 +62,11 @@ int main(int argc, char** argv){
 	if(index > 0){
 	  index--;
 	  input[index] = '\0';
-	  move(input_line, strlen(input_inst));
-	  clrtoeol();
-	  addstr(input);
 	}
       }
       //Handle question mark
       else if(c == '?'){
-	input[index] = c;
+	help_menu_entered = true;
 	//We want the help page to happen instantly
 	break;
       }
@@ -74,19 +83,22 @@ int main(int argc, char** argv){
     if(strcmp(input, "q") == 0 || strcmp(input, "Q") == 0){
       break;
     }
-    //Check for question mark
-    else if(strcmp(input, "?") == 0){
+
+    //Check for help screen
+    if(help_menu_entered){
       print_help();
     }
-    //Just hitting enter repeats the previous command
-    else if(strcmp(input, "") == 0){
-      memcpy(input, prev_input, MAX_INPUT_LEN);
-    }
+    else{
+      //Just hitting enter repeats the previous command
+      if(strcmp(input, "") == 0){
+	memcpy(input, prev_input, MAX_INPUT_LEN);
+      }
     
-    state_t *temp = make_move(s, input, true);
-    print_state(temp);
-    free(s);
-    s = temp;
+      state_t *temp = make_move(s, input, true);
+      print_state(temp);
+      free(s);
+      s = temp;
+    }
 
     memcpy(prev_input, input, MAX_INPUT_LEN);
   }
