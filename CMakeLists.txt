@@ -5,5 +5,6 @@ set(CMAKE_C_FLAGS "-std=c99 -Wall -Werror -pedantic -g")
 add_executable(Alg_Finder
         main.c
 	helpers.c
+        state.c
 )
 target_link_libraries(Alg_Finder ncurses m)

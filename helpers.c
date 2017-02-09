@@ -15,7 +15,7 @@ void *Calloc(size_t items, size_t size)
   
   if (ret == 0)
   {
-    quit("Error: out of memory!\n");
+    quit("Error: Out of memory!\n");
   }
   
   return ret;

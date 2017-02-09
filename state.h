@@ -10,7 +10,7 @@ typedef struct state_t state_t;
 
 /* Returns a state with every side set to its index.
  */
-state_t *empty_state();
+state_t *new_state(int side_len);
 
 /* Frees a given state.
  */
@@ -24,5 +24,14 @@ state_t *copy_state(state_t *s);
  * clockwise or counterclockwise.
  */
 state_t *make_move(state_t *s, int face, bool clockwise);
+
+/* Prints a 2-D representation of the cube to the terminal, unrolled in a 
+ * t-shaped pattern like this:
+ *        _
+ *      _|_|_ _
+ *     |_|_|_|_|
+ *       |_|
+ */
+void print_state(state_t *s);
 
 #endif

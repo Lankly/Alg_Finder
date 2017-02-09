@@ -2,6 +2,14 @@
 #define HELPERS_H
 
 #include<stdlib.h>
+#include<curses.h>
+
+//Needed for ncurses
+WINDOW *WIN;
+
+//Useful definitions
+#define TERMINAL_LENGTH 120
+#define TERMINAL_HEIGHT 80
 
 void *Calloc(size_t items, size_t size);
 void quit(const char *error_msg);
