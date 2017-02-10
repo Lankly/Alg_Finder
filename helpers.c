@@ -57,7 +57,7 @@ void print_help(){
   mvaddstr(13, 3,
 	   "Pressing enter with no move specified will repeat the most");
   mvaddstr(14, 3,
-	   "used move.");
+	   "recently used move.");
   mvaddstr(16, 3,
 	   "'q' quits the program. '?' brings you to this page.");
   mvaddstr(17, 3,

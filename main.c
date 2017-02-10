@@ -225,7 +225,12 @@ int main(int argc, char** argv){
     if(help_menu_entered){
       print_help();
     }
-    else if(!restart){
+    //If this was a restart, don't process anything.
+    else if(restart){
+      restart = false;
+    }
+    //Process the move
+    else{
       //Just hitting enter repeats the previous command
       if(strcmp(input, "") == 0 && history[0] != NULL){
 	memcpy(input, history[0], MAX_INPUT_LEN);
@@ -241,9 +246,6 @@ int main(int argc, char** argv){
       print_state(temp);
       free(s);
       s = temp;
-    }
-    else{
-      restart = false;
     }
   }
 
