@@ -116,7 +116,7 @@ bool confirm_restart(int input_line){
       index --;
       answer[index] = 0;
     }
-    else if(index < limit && isdigit(c)){
+    else if(index < (limit - 1) && isdigit(c)){
       answer[index] = c;
       index++;
     }
