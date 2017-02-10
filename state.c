@@ -138,8 +138,8 @@ state_t *make_move(state_t *s, char *input){
   int depth = get_depth(input);
   bool clockwise = is_clockwise(input);
 
-  //Stop if the face was invalid
-  if(face < 0){
+  //Stop if the face or depth was invalid
+  if(face < 0 || depth >= s->side_len){
     return copy;
   }
   
