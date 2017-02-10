@@ -37,4 +37,5 @@ This program simulates a Rubik's cube in two dimensions in the terminal by rolli
 2. make
 3. A C compiler
 4. ncurses
+5. A 256-color compatible terminal
 
