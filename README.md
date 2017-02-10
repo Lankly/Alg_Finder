@@ -11,8 +11,9 @@ This program simulates a Rubik's cube in two dimensions by rolling it out into a
 
 ##Installation
 1. Install any of the requirements that you do not have.
-2. Clone the project
-3. Run `cmake .` then `make`
+2. Clone the project: `git clone https://github.com/Lankly/Cube_Sim.git`
+3. Change to the new directory: `cd Cube_Sim/`
+4. Run `cmake .` then `make`
 
 ##Controls
 * Each face is specified with the first letter of its name:
