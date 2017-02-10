@@ -1,6 +1,6 @@
 # Cube_Sim
 
-This program simulates a Rubik's cube in two dimensions by rolling it out into a t-shape.
+This program simulates a Rubik's cube in two dimensions in the terminal by rolling it out into a t-shape.
 
 ##Features
 * Color for each of the faces to easily read the cube while scrambled.
