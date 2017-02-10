@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <curses.h>
+#include <math.h>
 #include "helpers.h"
 #include "state.h"
 
@@ -48,7 +49,12 @@ void print_history(char **history, int x_coord){
     return;
   }
 
-  for(int i = 0; i < HISTORY_LEN && history[i] != NULL; i++){
+  int max_lines_to_print = max_lines_to_print = MIN(HISTORY_LEN, side_len * 3);
+  
+  for(int i = 0; i < HISTORY_LEN && i < max_lines_to_print; i++){
+    if(history[i] == NULL){
+      break;
+    }
     mvaddstr(i, x_coord, history[i]);
   }
 }
@@ -107,7 +113,13 @@ bool confirm_restart(int input_line){
     return false;
   }
 
-  side_len = atoi(answer);
+  //Or if it was negative (Shouldn't be possible, since '-' can't be typed)
+  int answer_as_int = atoi(answer);
+  if(answer_as_int < 0){
+    return false;
+  }
+  
+  side_len = answer_as_int;
   
   free(answer);
 
