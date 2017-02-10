@@ -8,6 +8,7 @@ This program simulates a Rubik's cube in two dimensions in the terminal by rolli
 * Moves can be clockwise or counter-clockwise.
 * The ability to change the size of the cube you're simulating.
 * A log of your most recent moves appears to the right of the cube.
+* A count of how many moves have been made.
 
 ##Installation
 1. Install any of the requirements that you do not have.

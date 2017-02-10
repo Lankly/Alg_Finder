@@ -49,7 +49,7 @@ void print_history(char **history, int x_coord){
     return;
   }
 
-  int max_lines_to_print = max_lines_to_print = MIN(HISTORY_LEN, side_len * 3);
+  int max_lines_to_print = max_lines_to_print = MIN(HISTORY_LEN, side_len * 4);
   
   for(int i = 0; i < HISTORY_LEN && i < max_lines_to_print; i++){
     if(history[i] == NULL){
@@ -57,6 +57,20 @@ void print_history(char **history, int x_coord){
     }
     mvaddstr(i, x_coord, history[i]);
   }
+}
+
+void print_move_count(int count, int x_coord, int y_coord){
+  if(count < 1){
+    return;
+  }
+  
+  //Arbitrarily choose 10 digits
+  char *count_as_str = Calloc(10, sizeof(char));
+  sprintf(count_as_str, "%u", count);
+
+  mvaddstr(y_coord, x_coord, count_as_str);
+  
+  free(count_as_str);
 }
 
 void free_history(char **history){
@@ -126,7 +140,6 @@ bool confirm_restart(int input_line){
   return true;
 }
 
-
 /********
  * Main *
  ********/
@@ -140,11 +153,12 @@ int main(int argc, char** argv){
   keypad(stdscr, true);
   color_init();
   
-  state_t *s = new_state(side_len);
-  char *input = Calloc(MAX_INPUT_LEN, sizeof(char));
-  char **history = Calloc(HISTORY_LEN, sizeof(char *));
   bool help_menu_entered = false;
   bool restart = false;
+  int move_count = 0;
+  char *input = Calloc(MAX_INPUT_LEN, sizeof(char));
+  char **history = Calloc(HISTORY_LEN, sizeof(char *));
+  state_t *s = new_state(side_len);
 
   
   //Main Loop
@@ -158,8 +172,9 @@ int main(int argc, char** argv){
     mvaddstr(input_line + 1, 0, "Help: ?");
     mvaddstr(input_line, 0, input_inst);
 
-    //Print history
+    //Print history and move count
     print_history(history, side_len * 4 + 8);
+    print_move_count(move_count, side_len * 4 + 8, input_line + 1);
     
     //Setup for user input
     int c = 0;
@@ -215,6 +230,7 @@ int main(int argc, char** argv){
       if(confirm_restart(input_line)){
 	free_history(history);
 	history = Calloc(HISTORY_LEN, sizeof(char *));
+        move_count = 0;
 	free(s);
 	s = new_state(side_len);
       }
@@ -241,6 +257,7 @@ int main(int argc, char** argv){
       //Only add this input to history if it changed the cube
       if(!state_equal(temp, s)){
 	log_history(history, input);
+        move_count++;
       }
       
       print_state(temp);
