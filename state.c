@@ -105,6 +105,11 @@ void free_state(state_t *s){
     return;
   }
 
+  for(int i = 0; i < NUM_FACES; i++){
+    if(s->faces[i] != NULL){
+      free(s->faces[i]);
+    }
+  }
   free(s->faces);
   free(s);
 }
@@ -471,7 +476,7 @@ int get_face(char *str){
 
   //Get an all-lowercase version of str
   int len = strlen(str);
-  char *lower = Calloc(len, sizeof(char));
+  char *lower = Calloc(len + 1, sizeof(char));
   int lower_i = 0;
   for(int i = 0; str[i] != '\0'; i++){
     //Cut off any leading digits (and non-alpha characters in general)
@@ -482,26 +487,29 @@ int get_face(char *str){
   }
 
   //Start comparisons with pre-defined
+  int ret = -1;
   if(strcmp(lower, "b") == 0){
-    return 0;
+    ret = 0;
   }
   else if(strcmp(lower, "l") == 0){
-    return 1;
+    ret = 1;
   }
   else if(strcmp(lower, "u") == 0){
-    return 2;
+    ret = 2;
   }
   else if(strcmp(lower, "r") == 0){
-    return 3;
+    ret = 3;
   }
   else if(strcmp(lower, "d") == 0){
-    return 4;
+    ret = 4;
   }
   else if(strcmp(lower, "f") == 0){
-    return 5;
+    ret = 5;
   }
+
+  free(lower);
   
-  return -1;
+  return ret;
 }
 
 

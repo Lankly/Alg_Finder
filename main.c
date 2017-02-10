@@ -231,7 +231,7 @@ int main(int argc, char** argv){
 	free_history(history);
 	history = Calloc(HISTORY_LEN, sizeof(char *));
         move_count = 0;
-	free(s);
+	free_state(s);
 	s = new_state(side_len);
       }
       restart = true;
@@ -261,7 +261,7 @@ int main(int argc, char** argv){
       }
       
       print_state(temp);
-      free(s);
+      free_state(s);
       s = temp;
     }
   }
@@ -270,7 +270,9 @@ int main(int argc, char** argv){
     free_state(s);
   }
   free_history(history);
-  free(input);
+  if(input != NULL){
+    free(input);
+  }
 
   //Stop ncurses
   endwin();
